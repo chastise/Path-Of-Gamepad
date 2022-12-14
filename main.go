@@ -74,7 +74,7 @@ func main() {
 
 	config.Load()
 
-	gamepad := controllers.Gamepad{glfw.Joystick1, config.DeadZonePercentage()}
+	gamepad := controllers.Gamepad{Id: glfw.Joystick1, DeadZone: config.DeadZonePercentage()}
 	lastInput := controllers.Input{}
 
 	for {
@@ -196,6 +196,7 @@ func main() {
 }
 
 func HandleMultiActions(button string, unpressed bool) {
+
 	if len(config.Buttons()[button]) > 0 {
 		actions := strings.Split(config.Buttons()[button], ",")
 		for _, a := range actions {
@@ -206,6 +207,15 @@ func HandleMultiActions(button string, unpressed bool) {
 
 func HandleAction(action string, holdable bool, unpressed bool) {
 	switch action {
+	case "AltLeftClick":
+		if unpressed {
+			safeToggleMouseLeft("up")
+			HandleAction("lalt", true, unpressed)
+		} else {
+			HandleAction("lalt", true, unpressed)
+			robotgo.MilliSleep(10)
+			safeToggleMouseLeft("down")
+		}
 	case "RightClick":
 		if unpressed {
 			safeToggleMouseRight("up")
