@@ -26,6 +26,12 @@ func Load() {
 		"trigger_right":      "shift",
 		"trigger_left":       "control",
 	})
+	viper.SetDefault("heldActionCircleDistance", map[string]string{
+		"a": "close",
+		"b": "close",
+		"x": "close",
+		"y": "close",
+	})
 	viper.SetDefault("held", []string{
 		"bumper_right",
 	})
@@ -35,7 +41,9 @@ func Load() {
 		"character_y_offset_px":     "100",
 		"character_x_offset_px":     "0",
 		"walk_circle_radius_px":     "250",
-		"attack_circle_radius_px":   "250",
+		"close_circle_radius_px":    "110",
+		"mid_circle_radius_px":      "250",
+		"far_circle_radius_px":      "380",
 		"free_mouse_sensitivity_px": "8",
 		"dead_zone_percentage":      "0.17",
 	})
@@ -59,6 +67,10 @@ func Buttons() map[string]string {
 
 func Holdable() []string {
 	return viper.GetStringSlice("held")
+}
+
+func ActionOffset() map[string]string {
+	return viper.GetStringMapString("actionOffset")
 }
 
 func IsKeyHoldable(button string) bool {
@@ -121,6 +133,7 @@ func WalkCircleRadius() int {
 }
 
 func AttackCircleRadius() int {
+
 	i, err := strconv.Atoi(viper.GetStringMapString("settings")["attack_circle_radius_px"])
 	if err != nil {
 		fmt.Printf("Error reading attack_circle_radius_px, value %s is not an integer\n", err)
