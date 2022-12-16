@@ -1,8 +1,12 @@
+# Path of Gamepad
+
 See it in action: https://www.youtube.com/watch?v=_aU_xkLx5eg
 
-![](img/usage_example.gif)
+![Picture of a PoE character on a screen, with an xbox controller in the foreground. The left stick is being held to move the character. The right stick and right bumper are being used to attack with the Ethereal Knives skill in the direction that the right stick is pulled.](images/usage_example.gif)
 
-The gist of it is that the left stick moves your character, and the right stick moves your mouse. I've set it up in a way that feels pretty good to use by allowing you to move in one direction, aim with the right stick, and cast. The program flicks your mouse to the aimed position and returns it to the original movement position after, letting you move in a pretty similar way as you can with a typical mouse + kb. 
+The gist of it is that the left stick moves your character, and the right stick moves your mouse. I've set it up in a way that feels pretty good to use by allowing you to move in one direction, aim with the right stick, and cast. The program flicks your mouse to the aimed position and returns it to the original movement position after, letting you move in a pretty similar way as you can with a typical mouse + kb.
+
+## Configuration
 
 Configuration options can be found in the path-of-gamepad.yaml file created when the app is launched (the file will be created in the same directory as the executable, or created manually). By default, right click is bound to right bumper, flasks are bound to the D-Pad and left bumper, escape is back, and opening the inventory is start. Left click is performed automatically with the left stick but can also be 'clicked' as needed (menus, items) with "A". 
 
@@ -43,4 +47,4 @@ held:
 
 ```
 
-Feel free to post any issues, PRs, feature requests - no promises I'll be able to get to them all (I also have a day job!) but I'll try my best to fix anything glaring asap. 
+Feel free to post any issues, PRs, feature requests - no promises I'll be able to get to them all (I also have a day job!) but I'll try my best to fix anything glaring asap.
