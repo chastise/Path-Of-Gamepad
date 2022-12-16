@@ -3,11 +3,12 @@ package main
 import (
 	"fmt"
 	"math"
+	"runtime"
 	"strings"
 	"time"
 
 	"github.com/Steven-Ireland/path-of-gamepad/config"
-	"github.com/Steven-Ireland/path-of-gamepad/controllers"
+	"github.com/Steven-Ireland/path-of-gamepad/controller"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-vgo/robotgo"
@@ -38,7 +39,7 @@ func safeToggleMouseRight(toggleTo string) {
 	}
 }
 
-func someButtonHeld(input controllers.Input) bool {
+func someButtonHeld(input controller.Input) bool {
 	var holdables = config.Holdable()
 
 	var holding = false
@@ -66,20 +67,13 @@ func someButtonHeld(input controllers.Input) bool {
 	return holding
 }
 
-func main() {
-	err := glfw.Init()
-	if err != nil {
-		panic(err)
-	}
-
-	config.Load()
-
-	gamepad := controllers.Gamepad{Id: glfw.Joystick1, DeadZone: config.DeadZonePercentage()}
-	lastInput := controllers.Input{}
+func updateInputs() {
+	gamepad := controller.Gamepad{Id: glfw.Joystick1, DeadZone: config.DeadZonePercentage()}
+	lastInput := controller.Input{}
 
 	for {
 		glfw.PollEvents()
-		input, err := controllers.Read(gamepad, lastInput)
+		input, err := controller.Read(gamepad, lastInput)
 		if err != nil {
 			fmt.Println("Error reading from controller - is it plugged in?")
 			time.Sleep(5 * time.Second)
@@ -88,7 +82,7 @@ func main() {
 
 		var holding = someButtonHeld(input)
 
-		if holding && !controllers.IsDeadZone(input.Right.Direction) && !controllers.IsDeadZone(input.Left.Direction) {
+		if holding && !controller.IsDeadZone(input.Right.Direction) && !controller.IsDeadZone(input.Left.Direction) {
 			var angle = math.Atan2(input.Right.Direction.Y, input.Right.Direction.X)
 			var screenAdjustmentX = math.Cos(angle) * float64(config.AttackCircleRadius())
 			var screenAdjustmentY = math.Sin(angle) * float64(config.AttackCircleRadius())
@@ -149,15 +143,15 @@ func main() {
 			HandleMultiActions("dpad_right", false)
 		}
 
-		if !(holding && !controllers.IsDeadZone(input.Left.Direction) && !controllers.IsDeadZone(input.Right.Direction)) {
-			if controllers.IsDeadZone(input.Left.Direction) && !controllers.IsDeadZone(input.Right.Direction) {
+		if !(holding && !controller.IsDeadZone(input.Left.Direction) && !controller.IsDeadZone(input.Right.Direction)) {
+			if controller.IsDeadZone(input.Left.Direction) && !controller.IsDeadZone(input.Right.Direction) {
 				safeToggleMouseLeft("up")
 
 				var screenAdjustmentX = input.Right.Direction.X * float64(config.FreeMouseSensitivity())
 				var screenAdjustmentY = -1 * input.Right.Direction.Y * float64(config.FreeMouseSensitivity())
 
 				robotgo.MoveRelative((int)(screenAdjustmentX), (int)(screenAdjustmentY))
-			} else if controllers.IsDeadZone(input.Left.Direction) {
+			} else if controller.IsDeadZone(input.Left.Direction) {
 				safeToggleMouseLeft("up")
 				// robotgo.MoveMouse(
 				// 	(int)(SCREEN_RESOLUTION_X/2),
@@ -178,7 +172,7 @@ func main() {
 					(int)(float64(config.ScreenHeight())/2-screenAdjustmentY)-config.CharacterOffsetY(),
 				)
 			}
-		} else if holding && !controllers.IsDeadZone(input.Right.Direction) {
+		} else if holding && !controller.IsDeadZone(input.Right.Direction) {
 			var angle = math.Atan2(input.Right.Direction.Y, input.Right.Direction.X)
 
 			var screenAdjustmentX = math.Cos(angle) * float64(config.WalkCircleRadius())
@@ -192,7 +186,18 @@ func main() {
 		lastInput = input
 		time.Sleep(5 * time.Millisecond)
 	}
+}
 
+func main() {
+	runtime.LockOSThread()
+	err := glfw.Init()
+	if err != nil {
+		panic(err)
+	}
+
+	config.Load()
+
+	updateInputs()
 }
 
 func HandleMultiActions(button string, unpressed bool) {
