@@ -193,6 +193,9 @@ func main() {
 		time.Sleep(5 * time.Millisecond)
 	}
 
+	// TODO: Pull the loop out of updateInputs
+	// TODO: Standardize sleep time. Add a FPS config, and a min/max-sleep time. Use time.newTicker
+	// TODO: Once refactoring is done, fix the per-button hold distance for ABXY
 }
 
 func HandleMultiActions(button string, unpressed bool) {
